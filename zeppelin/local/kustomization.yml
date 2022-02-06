@@ -1,0 +1,12 @@
+bases:
+  - ../base
+
+namespace: zeppelin-tz
+
+images:
+  - name: apache/zeppelin
+    newName: apache/zeppelin
+    newTag: 0.10.0-tz
+
+patchesStrategicMerge:
+  - pv.yml

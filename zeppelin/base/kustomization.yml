@@ -1,0 +1,32 @@
+resources:
+  - namespace.yml
+  - deployment.yml
+  - service.yml
+  - config-map.yml
+  - service-account.yml
+  - role.yml
+  - role-binding.yml
+  - pv.yml
+  - pvc.yml
+
+namespace: zeppelin
+
+# namePrefix: dev-
+# nameSuffix: "-001"
+# commonLabels:
+# commonAnnotations:
+
+images:
+  - name: apache/zeppelin
+    newName: apache/zeppelin
+    newTag: 0.10.0
+
+vars:
+  - name: ZEPPELIN_K8S_CONTAINER_IMAGE # a env var set in container's command
+    objref:
+      kind: Deployment
+      name: zeppelin-server
+      apiVersion: apps/v1
+    fieldref:
+      fieldpath: spec.template.spec.containers[0].image
+

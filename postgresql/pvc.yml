@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pvc
+  namespace: postgres
+  labels:
+    app: postgres
+spec:
+  storageClassName: hostpath # provided by docker desktop, must be the same as PersistentVolume
+  accessModes:
+    - ReadWriteMany # must be the same as PersistentVolume
+  resources:
+    requests:
+      storage: 2Gi

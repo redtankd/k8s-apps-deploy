@@ -1,0 +1,130 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: zeppelin
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: zeppelin-server
+  namespace: zeppelin
+spec:
+  ports:
+    - name: http
+      port: 8080
+    - name: rpc # port name is referenced in the code. So it shouldn't be changed.
+      port: 12320
+  selector:
+    app.kubernetes.io/name: zeppelin-server
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: zeppelin-server
+  namespace: zeppelin
+  labels:
+    app.kubernetes.io/name: zeppelin-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zeppelin-server
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zeppelin-server
+    spec:
+      serviceAccountName: zeppelin-server
+      containers:
+        - name: zeppelin-server
+          image: apache/zeppelin:0.10.0
+          command: ["sh", "-c", "$(ZEPPELIN_HOME)/bin/zeppelin.sh"]
+          lifecycle:
+            preStop:
+              exec:
+                # SIGTERM triggers a quick exit; gracefully terminate instead
+                command:
+                  [
+                    "sh",
+                    "-c",
+                    "ps -ef | grep org.apache.zeppelin.server.ZeppelinServer | grep -v grep | awk '{print $2}' | xargs kill",
+                  ]
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+            - name: rpc
+              containerPort: 12320
+          env:
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.uid
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          envFrom:
+            - configMapRef:
+                name: zeppelin-server-conf-map
+      # volumeMounts:
+      #  - name: zeppelin-server-notebook-volume     # configure this to persist notebook
+      #    mountPath: /zeppelin/notebook
+      #  - name: zeppelin-server-conf                # configure this to persist Zeppelin configuration
+      #    mountPath: /zeppelin/conf
+      #  - name: zeppelin-server-custom-k8s          # configure this to mount customized Kubernetes spec for interpreter
+      #    mountPath: /zeppelin/k8s
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: zeppelin-server-conf-map
+  namespace: zeppelin
+data:
+  ZEPPELIN_HOME: /opt/zeppelin
+  ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
+  ZEPPELIN_K8S_CONTAINER_IMAGE: apache/zeppelin:0.10.0
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: zeppelin-server
+  namespace: zeppelin
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: zeppelin-server-role
+  namespace: zeppelin
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps"]
+    verbs: ["create", "get", "update", "patch", "list", "delete", "watch"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs:
+      ["bind", "create", "get", "update", "patch", "list", "delete", "watch"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: zeppelin-server-role-binding
+  namespace: zeppelin
+subjects:
+  - kind: ServiceAccount
+    name: zeppelin-server
+roleRef:
+  kind: Role
+  name: zeppelin-server-role
+  apiGroup: rbac.authorization.k8s.io

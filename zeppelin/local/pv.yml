@@ -1,0 +1,16 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: zeppelin-conf-pv
+spec:
+  hostPath:
+    path: /Users/redtank/var/lib/zeppelin/conf
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: zeppelin-notebook-pv
+spec:
+  hostPath:
+    path: /Users/redtank/var/lib/zeppelin/notebook
