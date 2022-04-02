@@ -1,0 +1,41 @@
+bases:
+  - ../with_storage
+
+patchesStrategicMerge:
+  - deployment.yml
+
+namespace: zeppelin
+
+images:
+  - name: zeppelin_with_tz
+    newName: zeppelin_with_pac4j
+    newTag: 0.10.0
+
+configMapGenerator:
+- name: zeppelin-conf-map
+  files:
+    - "conf/shiro.ini"
+    - "conf/zeppelin-site.xml"
+
+### environment variables will be injected into vars. But vars can't be used in PersistentVolume. woo...
+
+# configMapGenerator:
+# - name: environment-variables
+#   envs:
+#     - ".env"
+
+# vars:
+#   - name: ZEPPELIN_CONF_PATH
+#     objref:
+#       kind: ConfigMap
+#       name: environment-variables
+#       apiVersion: v1
+#     fieldref:
+#       fieldpath: data.ZEPPELIN_CONF_PATH
+#   - name: ZEPPELIN_NOTEBOOK_PATH
+#     objref:
+#       kind: ConfigMap
+#       name: environment-variables
+#       apiVersion: v1
+#     fieldref:
+#       fieldpath: data.ZEPPELIN_NOTEBOOK_PATH

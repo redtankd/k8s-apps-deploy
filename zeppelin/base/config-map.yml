@@ -5,5 +5,5 @@ metadata:
 data:
   ZEPPELIN_HOME: /opt/zeppelin
   ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
-  # ZEPPELIN_K8S_CONTAINER_IMAGE move to kustomization.yml
+  ### ZEPPELIN_K8S_CONTAINER_IMAGE move to kustomization.yml. `vars` can refer to image's attributes, so reduplicated parameters is unnecessary. 
   # ZEPPELIN_K8S_CONTAINER_IMAGE: apache/zeppelin:0.10.0-tz

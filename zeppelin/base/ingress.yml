@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zeppelin
+  annotations:
+    nginx.org/listen-ports: "8080"
+    nginx.org/websocket-services: "zeppelin-server"
+spec:
+  ingressClassName: nginx
+  # tls:
+  #   - hosts:
+  #     - KEYCLOAK_HOST
+  rules:
+  - host: zeppelin.local
+    http:
+      paths:
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: zeppelin-server
+            port:
+              number: 8080
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: zeppelin-server
+            port:
+              number: 8080

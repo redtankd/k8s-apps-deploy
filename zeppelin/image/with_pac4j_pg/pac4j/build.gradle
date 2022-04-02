@@ -1,0 +1,20 @@
+plugins {
+    id 'application' 
+}
+
+apply plugin : "java"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.buji:buji-pac4j:6.1.0'
+    implementation 'org.pac4j:pac4j-oidc:5.3.1' 
+    implementation 'org.pac4j:pac4j-jwt:5.3.1' 
+    implementation 'org.pac4j:pac4j-http:5.3.1' 
+}
+
+application {
+    mainClassName = 'Main'
+}

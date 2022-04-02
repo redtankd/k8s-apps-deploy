@@ -1,0 +1,32 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: zeppelin-server
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zeppelin-server
+  template:
+    spec:
+      containers:
+        - name: zeppelin-server
+          volumeMounts:
+            - mountPath: /opt/zeppelin/conf/shiro.ini
+              subPath: shiro.ini
+              name: shiro-ini
+            - mountPath: /opt/zeppelin/conf/zeppelin-site.xml
+              subPath: zeppelin-site.xml
+              name: zeppelin-site-xml
+      volumes:
+        - name: shiro-ini
+          configMap:
+            name: zeppelin-conf-map
+            items:
+            - key: shiro.ini
+              path: shiro.ini
+        - name: zeppelin-site-xml
+          configMap:
+            name: zeppelin-conf-map
+            items:
+            - key: zeppelin-site.xml
+              path: zeppelin-site.xml

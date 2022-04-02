@@ -20,6 +20,7 @@ spec:
       containers:
         - name: zeppelin-server
           image: apache/zeppelin
+          # $(ZEPPELIN_K8S_CONTAINER_IMAGE) is defined in kustomization.yml, which Interpreter needs to know.
           command: ["sh", "-c", "ZEPPELIN_K8S_CONTAINER_IMAGE=$(ZEPPELIN_K8S_CONTAINER_IMAGE) $(ZEPPELIN_HOME)/bin/zeppelin.sh"]
           lifecycle:
             preStop:
@@ -52,17 +53,4 @@ spec:
           envFrom:
             - configMapRef:
                 name: zeppelin-server-conf-map
-          volumeMounts:
-            - name: zeppelin-server-notebook               # configure this to persist notebook
-              mountPath: /opt/zeppelin/notebook
-            - name: zeppelin-server-conf                   # configure this to persist Zeppelin configuration
-              mountPath: /opt/zeppelin/conf
-            #  - name: zeppelin-server-custom-k8s          # configure this to mount customized Kubernetes spec for interpreter
-            #    mountPath: /zeppelin/k8s
-      volumes:
-        - name: zeppelin-server-conf
-          persistentVolumeClaim:
-            claimName: zeppelin-conf-pvc
-        - name: zeppelin-server-notebook
-          persistentVolumeClaim:
-            claimName: zeppelin-notebook-pvc
+

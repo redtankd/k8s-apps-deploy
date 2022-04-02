@@ -1,0 +1,19 @@
+resources:
+  - namespace.yml
+  - deployment.yml
+  - service.yml
+  - ingress.yml
+  # - config-map.yml
+  # - service-account.yml
+  # - role.yml
+  # - role-binding.yml
+  # - pv.yml
+  # - pvc.yml
+
+namespace: keycloak
+
+# namePrefix: dev-
+# nameSuffix: "-001"
+# commonLabels:
+# commonAnnotations:
+

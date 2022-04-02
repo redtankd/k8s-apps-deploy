@@ -1,0 +1,8 @@
+bases:
+  - ../base
+  - config-map.yml
+
+patchesStrategicMerge:
+  - deployment.yml
+
+namespace: keycloak
